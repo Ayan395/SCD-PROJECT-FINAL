@@ -25,15 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
                             const li = document.createElement('li');
                             li.className = 'dropdown-item';
                             li.innerHTML = `
-                                <img src="/storage/${service.image}" alt="${service.title}" style="width: 40px; height: 40px; margin-right: 10px;">
-                                <span>${service.title}</span>
+                                <div style="display: flex; align-items: center;">
+                                    <img src="/storage/${service.image}" alt="${service.title}" style="width: 40px; height: 40px; margin-right: 10px; border-radius: 5px;">
+                                    <div>
+                                        <span style="font-weight: bold;">${service.title}</span><br>
+                                        <span style="font-size: 12px; color: gray;">${service.description.substring(0, 50)}...</span>
+                                    </div>
+                                </div>
                             `;
                             searchResults.appendChild(li);
                         });
 
                         searchResults.style.display = 'block';
                     } else {
-                        searchResults.innerHTML = '<li class="dropdown-item">No results found</li>';
+                        searchResults.innerHTML = '<li class="dropdown-item text-center">No results found</li>';
                         searchResults.style.display = 'block';
                     }
                 })

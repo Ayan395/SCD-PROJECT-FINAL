@@ -18,5 +18,14 @@ class Service extends Model
         'title',
         'description',
         'image',
+        'category_id', // Add category_id for the relationship
     ];
+
+    /**
+     * Get the category associated with the service.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

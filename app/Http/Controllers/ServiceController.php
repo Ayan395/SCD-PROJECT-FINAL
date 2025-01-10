@@ -3,23 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
     public function search(Request $request)
-{
-    $query = $request->query('query', '');
+    {
+        $query = $request->query('query', '');
 
-    $services = Service::where('title', 'like', '%' . $query . '%')
-        ->orWhere('description', 'like', '%' . $query . '%')
-        ->get();
+        $services = Service::where('title', 'like', '%' . $query . '%')
+            ->orWhere('description', 'like', '%' . $query . '%')
+            ->get();
 
-    return response()->json([
-        'services' => $services,
-    ]);
-}
+        return response()->json([
+            'services' => $services,
+        ]);
+    }
 
     /**
      * Display a listing of the resource.
@@ -27,7 +28,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
+        $services = Service::with('category')->get(); // Fetch services with category relationship
         return view('services.index', compact('services'));
     }
 
@@ -37,7 +38,8 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        return view('services.create');
+        $categories = Category::all(); // Fetch all categories for the dropdown
+        return view('services.create', compact('categories'));
     }
 
     /**
@@ -50,6 +52,7 @@ class ServiceController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id', // Validate category
         ]);
 
         $imagePath = null;
@@ -61,6 +64,7 @@ class ServiceController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'image' => $imagePath,
+            'category_id' => $request->input('category_id'), // Save category_id
         ]);
 
         return redirect()->route('services.create')->with('success', 'Service created successfully!');
@@ -73,7 +77,8 @@ class ServiceController extends Controller
     public function edit($id)
     {
         $service = Service::findOrFail($id);
-        return view('services.edit', compact('service'));
+        $categories = Category::all(); // Fetch all categories for the dropdown
+        return view('services.edit', compact('service', 'categories'));
     }
 
     /**
@@ -86,6 +91,7 @@ class ServiceController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id', // Validate category
         ]);
 
         $service = Service::findOrFail($id);
@@ -101,6 +107,7 @@ class ServiceController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'image' => $service->image,
+            'category_id' => $request->input('category_id'), // Update category_id
         ]);
 
         return redirect()->route('services.edit', $service->id)->with('success', 'Service updated successfully!');
@@ -121,6 +128,5 @@ class ServiceController extends Controller
         $service->delete();
 
         return redirect()->route('services.index')->with('success', 'Service deleted successfully!');
-        
     }
 }

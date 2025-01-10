@@ -17,6 +17,7 @@
                 <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
+                <th>Category</th>
                 <th>Image</th>
                 <th>Actions</th>
             </tr>
@@ -28,8 +29,11 @@
                     <td>{{ $service->title }}</td>
                     <td>{{ $service->description }}</td>
                     <td>
+                        {{ $service->category ? $service->category->name : 'N/A' }}
+                    </td>
+                    <td>
                         @if($service->image)
-                            <img src="{{ asset('storage/services/' . $service->image) }}" alt="{{ $service->title }}" width="50">
+                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" width="50">
                         @endif
                     </td>
                     <td>
